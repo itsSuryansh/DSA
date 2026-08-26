@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        if (numRows == 1 || numRows >= s.size())
+            return s;
+        vector<string> rows(numRows);
+        int row = 0;
+        int direction = 1;
+        for (char c : s) {
+            rows[row] += c;
+            if (row == 0)
+                direction = 1;
+            else if (row == numRows - 1)
+                direction = -1;
+            row += direction;
+        }
+        string ans;
+        for (string &r : rows)
+            ans += r;
+        return ans;
+    }
+};
+
+// Synced seamlessly with LeetHub Pro
+// Pro features: https://bit.ly/leethubpro | Free version: https://bit.ly/leethubv4
+// Get it here: https://chromewebstore.google.com/detail/bcilpkkbokcopmabingnndookdogmbna
