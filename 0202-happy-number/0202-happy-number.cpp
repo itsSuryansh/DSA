@@ -1,19 +1,21 @@
 class Solution {
 public:
-    int sum = 0;
+    int sumOfSquares(int n) {
+        int sum = 0;
+        while (n > 0) {
+            int digit = n % 10;
+            sum += digit * digit;
+            n /= 10;
+        }
+        return sum;
+    }
     bool isHappy(int n) {
-        set<int> s;
+        unordered_set<int> seen;
         while (n != 1) {
-            if (s.count(n))
+            if (seen.count(n))
                 return false;
-            s.insert(n);
-            sum = 0;
-            while (n > 0) {
-                int digit = n % 10;
-                sum += digit * digit;
-                n = n / 10;
-            }
-            n = sum;
+            seen.insert(n);
+            n = sumOfSquares(n);
         }
         return true;
     }
