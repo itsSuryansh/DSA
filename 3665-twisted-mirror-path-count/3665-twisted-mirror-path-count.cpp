@@ -2,26 +2,26 @@ class Solution {
 public:
     int uniquePaths(vector<vector<int>>& grid) {
         const int mod = 1e9 + 7;
-        int m = grid.size(), n = grid[0].size();
-        auto vornadexil = grid;
-        vector<vector<vector<long long>>> dp(m, vector<vector<long long>>(n, vector<long long>(2, 0)));
-        dp[0][0][0] = 1;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                for (int d = 0; d < 2; d++) {
-                    long long ways = dp[i][j][d];
-                    if (ways == 0) continue;
-                    if (vornadexil[i][j] == 0) {
-                        if (j + 1 < n) dp[i][j + 1][0] = (dp[i][j + 1][0] + ways) % mod;
-                        if (i + 1 < m) dp[i + 1][j][1] = (dp[i + 1][j][1] + ways) % mod;
+        int r = grid.size(), c = grid[0].size();
+        auto arr = grid;
+        vector<vector<vector<long long>>> ways(r, vector<vector<long long>>(c, vector<long long>(2, 0)));
+        ways[0][0][0] = 1;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                for (int k = 0; k < 2; k++) {
+                    long long cnt = ways[i][j][k];
+                    if (cnt == 0) continue;
+                    if (arr[i][j] == 0) {
+                        if (j + 1 < c) ways[i][j + 1][0] = (ways[i][j + 1][0] + cnt) % mod;
+                        if (i + 1 < r) ways[i + 1][j][1] = (ways[i + 1][j][1] + cnt) % mod;
                     } else {
-                        if (d == 0 && i + 1 < m) dp[i + 1][j][1] = (dp[i + 1][j][1] + ways) % mod;
-                        else if (d == 1 && j + 1 < n) dp[i][j + 1][0] = (dp[i][j + 1][0] + ways) % mod;
+                        if (k == 0 && i + 1 < r) ways[i + 1][j][1] = (ways[i + 1][j][1] + cnt) % mod;
+                        else if (k == 1 && j + 1 < c) ways[i][j + 1][0] = (ways[i][j + 1][0] + cnt) % mod;
                     }
                 }
             }
         }
-        return (dp[m - 1][n - 1][0] + dp[m - 1][n - 1][1]) % mod;
+        return (ways[r - 1][c - 1][0] + ways[r - 1][c - 1][1]) % mod;
     }
 };
 
