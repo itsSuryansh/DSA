@@ -1,33 +1,28 @@
 class Solution {
 public:
     vector<string> ans;
-    vector<string> path;
-    void backtrack(string& s, int index) {
-            if (path.size() == 4) {
-            if (index == s.size()) {
-                ans.push_back(
-                    path[0] + "." +
-                    path[1] + "." +
-                    path[2] + "." +
-                    path[3]
-                );
-            }
+    void solve(string &s, int index, int parts, string ip) {
+        if (parts == 4 && index == s.size()) {
+            ip.pop_back();
+            ans.push_back(ip);
             return;
         }
-        int num = 0;
-        for (int i = index; i < s.size() && i < index + 3; i++) {
-            if (i > index && s[index] == '0')
-                break;
-            num = num * 10 + (s[i] - '0');
+        if (parts >= 4 || index >= s.size())
+            return;
+        for (int len = 1; len <= 3 && index + len <= s.size(); len++) {
+            string segment = s.substr(index, len);
+            if (len > 1 && segment[0] == '0')
+                continue;
+            int num = stoi(segment);
             if (num > 255)
-                break;
-            path.push_back(s.substr(index, i - index + 1));
-            backtrack(s, i + 1);
-            path.pop_back(); // backtrack
+                continue;
+            solve(s, index + len, parts + 1, ip + segment + ".");
         }
     }
     vector<string> restoreIpAddresses(string s) {
-        backtrack(s, 0);
+        if (s.size() < 4 || s.size() > 12)
+            return {};
+        solve(s, 0, 0, "");
         return ans;
     }
 };
