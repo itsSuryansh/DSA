@@ -1,84 +1,110 @@
 
 class Solution {
 public:
-    vector<vector<string>> ans;
-    unordered_map<string, vector<string>> parent;
+    vector<vector<string>> findLadders(
+        string beginWord,
+        string endWord,
+        vector<string>& wordList
+    ) {
+        unordered_set<string> dict(wordList.begin(), wordList.end());
 
-    void dfs(string word, string beginWord, vector<string>& path) {
+        vector<vector<string>> ans;
+
+        if (!dict.count(endWord)) {
+            return ans;
+        }
+
+        unordered_map<string, vector<string>> parent;
+
+        queue<string> q;
+        q.push(beginWord);
+
+        unordered_set<string> visited;
+        visited.insert(beginWord);
+
+        bool found = false;
+
+        // BFS
+        while (!q.empty() && !found) {
+
+            int size = q.size();
+
+            unordered_set<string> levelVisited;
+
+            for (int i = 0; i < size; i++) {
+
+                string word = q.front();
+                q.pop();
+
+                for (int j = 0; j < word.size(); j++) {
+
+                    string temp = word;
+
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+
+                        if (temp[j] == ch)
+                            continue;
+
+                        temp[j] = ch;
+
+                        if (dict.count(temp) && !visited.count(temp)) {
+
+                            if (temp == endWord)
+                                found = true;
+
+                            parent[temp].push_back(word);
+
+                            if (!levelVisited.count(temp)) {
+                                q.push(temp);
+                                levelVisited.insert(temp);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Mark all words of current level as visited
+            for (auto& word : levelVisited) {
+                visited.insert(word);
+            }
+        }
+
+        // Backtracking
+        if (found) {
+            vector<string> path;
+            path.push_back(endWord);
+
+            dfs(endWord, beginWord, parent, path, ans);
+        }
+
+        return ans;
+    }
+
+    void dfs(
+        string word,
+        string beginWord,
+        unordered_map<string, vector<string>>& parent,
+        vector<string>& path,
+        vector<vector<string>>& ans
+    ) {
+
         if (word == beginWord) {
+
             vector<string> temp = path;
             reverse(temp.begin(), temp.end());
+
             ans.push_back(temp);
             return;
         }
 
         for (string p : parent[word]) {
+
             path.push_back(p);
-            dfs(p, beginWord, path);
+
+            dfs(p, beginWord, parent, path, ans);
+
             path.pop_back();
         }
-    }
-
-    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
-        ans.clear();
-        parent.clear();
-
-        unordered_set<string> st(wordList.begin(), wordList.end());
-
-        if (!st.count(endWord))
-            return ans;
-
-        queue<string> q;
-        q.push(beginWord);
-        st.erase(beginWord);
-
-        bool found = false;
-
-        while (!q.empty() && !found) {
-            int size = q.size();
-            unordered_set<string> used;
-
-            while (size--) {
-                string word = q.front();
-                q.pop();
-
-                string temp = word;
-
-                for (int i = 0; i < word.size(); i++) {
-                    char original = temp[i];
-
-                    for (char ch = 'a'; ch <= 'z'; ch++) {
-                        if (ch == original)
-                            continue;
-
-                        temp[i] = ch;
-
-                        if (st.count(temp)) {
-                            parent[temp].push_back(word);
-                            used.insert(temp);
-
-                            if (temp == endWord)
-                                found = true;
-                        }
-                    }
-
-                    temp[i] = original;
-                }
-            }
-
-            for (string word : used) {
-                q.push(word);
-                st.erase(word);
-            }
-        }
-
-        if (!found)
-            return ans;
-
-        vector<string> path = {endWord};
-        dfs(endWord, beginWord, path);
-
-        return ans;
     }
 };
 
